@@ -27,7 +27,7 @@ h2{font:600 22px 'Literata',serif;margin:34px 0 14px;display:flex;align-items:ba
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000c;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none}#toast.show{opacity:1}
 @media (max-width:600px){.hero{padding:16px;gap:16px}.hero .cv{width:86px}.hero h3{font-size:20px}.shelf{grid-template-columns:repeat(3,1fr);gap:26px 14px;padding:18px 14px 0}.bk .n{font-size:12px}.btn span{display:none}}
 .hasimg .t,.hasimg .a{display:none}
-/*COVER*/
+
 </style></head><body>
 <header><div class="logo">Kitaab<i>nama</i></div><label class="btn pri"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Open EPUB file</span><input type="file" id="file" accept=".epub,application/epub+zip" hidden></label></header>
 <main>
@@ -39,8 +39,7 @@ h2{font:600 22px 'Literata',serif;margin:34px 0 14px;display:flex;align-items:ba
 <div id="drop">Drop an EPUB to add it</div><div id="toast"></div>
 <script src="vendor/jszip.min.js"></script><script src="vendor/epub.min.js"></script><script src="common.js"></script>
 <script>
-document.querySelector('style').textContent=document.querySelector('style').textContent.replace('.hasimg .t,.hasimg .a{display:none}
-/*COVER*/',COVER_CSS);
+(()=>{const s=document.createElement('style');s.textContent=COVER_CSS;document.head.appendChild(s)})();
 const $=s=>document.querySelector(s);const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)};
 let IMPORTED=[],URLS={};
 function info(id){if(id.startsWith('idb:')){const r=IMPORTED.find(x=>'idb:'+x.id==id);if(!r)return null;const [c1,c2]=hashColor(r.title);return {id,title:r.title,author:r.author,c1,c2,v:2,img:URLS[r.id]}}const c=CATALOG.find(b=>b.id==id);return c&&Object.assign({},c)}
@@ -55,11 +54,11 @@ function render(){const rec=KN.get('recent',[]).map(r=>info(r.id)&&Object.assign
  $('#shelf').innerHTML=CATALOG.map(b=>card(b,13)).join('');
  $('#mine').innerHTML=IMPORTED.length?'<h2>My files <small>Stored on this device</small></h2><div class="shelfwrap"><div class="shelf">'+IMPORTED.map(r=>card(info('idb:'+r.id),13,true)).join('')+'</div></div>':'';
  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.preventDefault();e.stopPropagation();if(!confirm('Remove this book from this device?'))return;const id=b.dataset.del.slice(4);await IDB.del(id);localStorage.removeItem('kn:book:'+b.dataset.del);localStorage.removeItem('kn:loc:'+b.dataset.del);KN.set('recent',KN.get('recent',[]).filter(r=>r.id!=b.dataset.del));load()})}
-async function load(){try{IMPORTED=await IDB.all()}catch(e){IMPORTED=[]}IMPORTED.forEach(r=>{if(r.cover&&!URLS[r.id])URLS[r.id]=URL.createObjectURL(r.cover)});render()}
+async function load(){try{IMPORTED=await IDB.all()}catch(e){IMPORTED=[]}IMPORTED.forEach(r=>{if(r.cover&&!URLS[r.id]){try{URLS[r.id]=URL.createObjectURL(r.cover instanceof Blob?r.cover:new Blob([r.cover.buf],{type:r.cover.type}))}catch(e){}}});render()}
 async function importFile(f){if(!f)return;toast('Adding '+f.name+'…');try{const data=await f.arrayBuffer();const bk=ePub(data);await bk.ready;const md=bk.packaging.metadata;let cover=null;
- try{const u=await bk.coverUrl();if(u)cover=await (await fetch(u)).blob()}catch(e){}
+ try{const u=await bk.coverUrl();if(u){const bl=await (await fetch(u)).blob();cover={type:bl.type||'image/jpeg',buf:await bl.arrayBuffer()}}}catch(e){}
  const id=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-1',data))).slice(0,8).map(x=>x.toString(16).padStart(2,'0')).join('');
- await IDB.put({id,title:md.title||f.name.replace(/\.epub$/i,''),author:md.creator||'',data,cover,added:Date.now()});bk.destroy();location.href='reader.html?book=idb:'+id}catch(e){console.error(e);toast('That file could not be opened as an EPUB')}}
+ const rec={id,title:md.title||f.name.replace(/\.epub$/i,''),author:md.creator||'',data,cover,added:Date.now()};try{await IDB.put(rec)}catch(e){rec.cover=null;await IDB.put(rec)}bk.destroy();location.href='reader.html?book=idb:'+id}catch(e){console.error(e);toast('That file could not be opened as an EPUB')}}
 $('#file').onchange=e=>importFile(e.target.files[0]);
 addEventListener('dragover',e=>{e.preventDefault();$('#drop').classList.add('show')});addEventListener('dragleave',e=>{if(!e.relatedTarget)$('#drop').classList.remove('show')});
 addEventListener('drop',e=>{e.preventDefault();$('#drop').classList.remove('show');importFile(e.dataTransfer.files[0])});
