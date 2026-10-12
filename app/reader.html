@@ -1,0 +1,166 @@
+<!doctype html><html lang="en" data-theme="white"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kitaabnama Reader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#1d1b19;--muted:#8b867f;--line:#0000001a;--chrome:rgba(255,255,255,.9);--accent:#C8862A;--panel:#fff;--ui:'Inter',system-ui,sans-serif;--sys:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif;--mx:56px}
+[data-theme=sepia]{--bg:#f6efe1;--fg:#3b2f22;--muted:#9a8a73;--line:#5b452a22;--chrome:rgba(246,239,225,.92);--panel:#fbf6ec}
+[data-theme=gray]{--bg:#4a4a4c;--fg:#e9e7e3;--muted:#a8a6a2;--line:#ffffff1f;--chrome:rgba(74,74,76,.92);--panel:#5a5a5c}
+[data-theme=dark]{--bg:#121212;--fg:#cfcac2;--muted:#77736d;--line:#ffffff17;--chrome:rgba(18,18,18,.9);--accent:#E0A84E;--panel:#1e1e1e}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--ui);-webkit-text-size-adjust:100%;transition:background .3s,color .3s}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#viewer{position:absolute;top:56px;bottom:56px;left:var(--mx);right:var(--mx)}
+#bar,#foot{position:fixed;left:0;right:0;z-index:20;display:flex;align-items:center;gap:4px;padding:0 10px;transition:opacity .35s,transform .35s;background:var(--chrome);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#bar{top:0;height:52px;border-bottom:1px solid var(--line)}#foot{bottom:0;height:52px;border-top:1px solid var(--line);flex-direction:column;justify-content:center;gap:6px;padding:0 20px}
+body.immersive #bar{opacity:0;transform:translateY(-100%);pointer-events:none}body.immersive #foot{opacity:0;transform:translateY(100%);pointer-events:none}
+#bar .ib{width:40px;height:40px;border-radius:10px;display:grid;place-items:center}#bar .ib:hover{background:var(--line)}#bar .ib.on{color:var(--accent)}
+#ttl{flex:1;text-align:center;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}#ttl b{color:var(--fg);font-weight:600}
+#runhead{position:fixed;top:20px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);pointer-events:none;transition:opacity .3s}body:not(.immersive) #runhead{opacity:0}
+#mini{position:fixed;bottom:20px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted);pointer-events:none;transition:opacity .3s}body:not(.immersive) #mini{opacity:0}
+#prog{width:100%;max-width:720px;-webkit-appearance:none;appearance:none;height:3px;background:var(--line);border-radius:2px;outline:none;margin:0}
+#prog::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 1px 3px #0004}
+#pinfo{font-size:11px;color:var(--muted);display:flex;gap:14px;width:100%;max-width:720px;justify-content:space-between}
+.pop{position:fixed;z-index:40;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 60px #0003,0 2px 8px #0001;display:none}.pop.show{display:block}
+#aa{top:60px;right:12px;width:320px;padding:16px}
+#aa .row{display:flex;gap:8px;align-items:center;margin:10px 0}#aa label{font-size:12px;color:var(--muted);width:64px;flex:none}
+.th{width:44px;height:44px;border-radius:50%;border:1px solid #0002;font:600 15px 'Literata',serif}.th.on{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;flex:1;background:var(--line);border-radius:9px;padding:2px}.seg button{flex:1;padding:6px 4px;border-radius:7px;font-size:12px}.seg button.on{background:var(--bg);box-shadow:0 1px 3px #0002;font-weight:600}
+.stp{display:flex;flex:1;align-items:center;background:var(--line);border-radius:9px}.stp button{flex:1;padding:6px;font-size:15px}.stp span{min-width:44px;text-align:center;font-size:12px}
+#side{top:60px;left:12px;width:360px;max-height:calc(100vh - 140px);display:none;flex-direction:column}#side.show{display:flex}
+#side .tabs{padding:12px 12px 8px}#side .list{overflow:auto;padding:0 6px 10px}
+.it{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:14px;line-height:1.35}.it:hover{background:var(--line)}.it.cur{color:var(--accent);font-weight:600}.it small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.it.l2{padding-left:28px;font-size:13px}.it .q{font-family:'Literata',serif;border-left:3px solid var(--hc,#ffd54a);padding-left:8px}
+.empty{padding:24px 12px;color:var(--muted);font-size:13px;text-align:center}
+#search input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:14px var(--ui);outline:none}
+.it mark{background:#ffd54a88;color:inherit}
+#sel{padding:6px;display:none;align-items:center;gap:2px;border-radius:14px}#sel.show{display:flex}
+#sel .dot{width:22px;height:22px;border-radius:50%;margin:0 3px;border:2px solid #fff;box-shadow:0 0 0 1px #0002}#sel .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+#sel .tb{padding:7px 10px;border-radius:9px;font-size:13px;font-weight:500}#sel .tb:hover{background:var(--line)}
+#toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:#000c;color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none}#toast.show{opacity:1}
+#bm{position:fixed;top:0;right:calc(var(--mx) + 8px);width:18px;height:30px;background:#d9453a;clip-path:polygon(0 0,100% 0,100% 100%,50% 75%,0 100%);z-index:15;display:none}#bm.show{display:block}
+#loading{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;z-index:5}
+.edge{position:fixed;top:56px;bottom:56px;width:var(--mx);z-index:3;display:grid;place-items:center;color:var(--muted);opacity:0;transition:opacity .2s}.edge:hover{opacity:1}#pv{left:0}#nx{right:0}
+@media (max-width:700px){:root{--mx:18px}#aa,#side{left:8px;right:8px;width:auto}#aa{top:auto;bottom:8px}.hide-sm{display:none}.edge{display:none}#swati{height:min(560px,calc(100vh - 90px))}}
+/* Swati slide-over */
+#swati{position:fixed;z-index:30;width:min(370px,calc(100vw - 24px));height:min(640px,calc(100vh - 110px));top:76px;left:0;background:#fffdf8;color:#2a2622;border-radius:22px;box-shadow:0 24px 70px #0000004d,0 0 0 .5px #0000001f;display:flex;flex-direction:column;overflow:hidden;font-family:var(--ui);transition:left .38s cubic-bezier(.2,.8,.2,1),top .38s cubic-bezier(.2,.8,.2,1),opacity .25s;touch-action:none}
+[data-theme=dark] #swati,[data-theme=gray] #swati{background:#262422;color:#ece6dc}
+#swati.drag{transition:none}#swati.hidden{opacity:0;pointer-events:none}
+.grab{height:22px;display:grid;place-items:center;cursor:grab;flex:none}.grab:active{cursor:grabbing}.grab i{width:40px;height:5px;border-radius:3px;background:#0000002e}[data-theme=dark] .grab i,[data-theme=gray] .grab i{background:#ffffff40}
+.sh{display:flex;align-items:center;gap:10px;padding:0 14px 10px;cursor:grab}
+.face{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE1A0,#E39A35);display:grid;place-items:center;font-size:20px;flex:none}
+.sh b{font-size:15px;display:block}.sh small{font-size:12px;color:#5f8f62}
+.sh button{margin-left:auto;border:0;background:#0000000d;color:inherit;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px}
+.sbody{flex:1;overflow:auto;padding:4px 14px;touch-action:pan-y}
+.m{max-width:88%;padding:9px 13px;border-radius:16px;margin:7px 0;font-size:14.5px;line-height:1.45}.m.s{background:#f7e6c6;color:#2a2622;border-bottom-left-radius:5px}.m.u{background:#7A2E3B;color:#fff;margin-left:auto;border-bottom-right-radius:5px}
+.m blockquote{margin:0 0 6px;padding-left:8px;border-left:2px solid #ffffff88;font-style:italic;opacity:.9}
+.wc{background:#fff6e4;color:#2a2622;border-radius:16px;padding:14px;margin:8px 0}.wc h3{margin:0;font:600 24px Literata,serif;color:#7A2E3B}.wc .ph{color:#8a7d6b;font-size:13px;margin:2px 0 8px}.wc .syl span{display:inline-block;border:2px dashed #E39A35;border-radius:8px;padding:2px 8px;margin:0 4px 6px 0;font-weight:700}.wc p{margin:6px 0;font-size:14px}.wc button{border:0;background:#E39A35;color:#fff;border-radius:14px;padding:5px 11px;font-weight:600;cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;flex:none}.chips button{flex:none;border:1px solid #e4cfa8;background:transparent;color:inherit;border-radius:16px;padding:6px 10px;font:500 12.5px var(--ui);cursor:pointer}
+.ask{display:flex;gap:8px;padding:10px 14px 14px;flex:none}.ask input{flex:1;min-width:0;border:1px solid #0000001f;background:#fff;border-radius:20px;padding:9px 13px;font:14px var(--ui)}.ask button{border:0;width:38px;border-radius:50%;background:#E39A35;color:#fff;font-size:16px;cursor:pointer}
+#tab{position:fixed;z-index:31;width:30px;height:96px;top:200px;background:linear-gradient(180deg,#F2B45A,#C8862A);box-shadow:0 6px 20px #0004;cursor:pointer;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;touch-action:none;transition:top .3s}
+#tab.show{display:flex}#tab.r{right:0;border-radius:14px 0 0 14px}#tab.l{left:0;border-radius:0 14px 14px 0}
+#tab span{font-size:16px}#tab i{width:4px;height:30px;border-radius:2px;background:#ffffffaa}
+/* ===== Swati — HIG redesign ===== */
+:root{--sys:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif}
+#swati{font-family:var(--sys);background:rgba(250,249,247,.86)!important;color:#1c1c1e!important;backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.12),inset 0 .5px 0 rgba(255,255,255,.7);letter-spacing:-.01em}
+[data-theme=dark] #swati,[data-theme=gray] #swati{background:rgba(44,44,46,.88)!important;color:#f2f2f7!important;box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 .5px rgba(255,255,255,.14),inset 0 .5px 0 rgba(255,255,255,.12)}
+.grab{height:20px}.grab i{width:36px;height:5px;background:rgba(60,60,67,.3)}
+.sh{padding:2px 18px 14px;gap:12px}
+.orb{width:34px;height:34px;border-radius:50%;flex:none;position:relative;background:conic-gradient(from var(--a,0deg),#ff9f6b,#ff6fb5,#a37bff,#5ac8fa,#7ee0a1,#ffd36b,#ff9f6b);animation:spin 6s linear infinite;filter:saturate(1.1)}
+.orb:after{content:"";position:absolute;inset:3px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(255,255,255,.35) 45%,rgba(255,255,255,0) 70%)}
+.orb.sm{width:18px;height:18px}.orb.sm:after{inset:2px}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}@keyframes spin{to{--a:360deg}}
+.sh b{font:600 17px var(--sys);letter-spacing:-.02em}.sh small{font:400 12.5px var(--sys);color:rgba(60,60,67,.6)}
+[data-theme=dark] .meta,[data-theme=gray] .meta,[data-theme=dark] .sh small,[data-theme=gray] .sh small{color:rgba(235,235,245,.6)}
+.sh button{width:30px;height:30px;background:rgba(120,120,128,.14);display:grid;place-items:center}.sh button svg,.sic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.segc{display:flex;margin:0 18px 10px;padding:2px;background:rgba(118,118,128,.14);border-radius:9px;flex:none}
+.segc button{flex:1;border:0;background:none;color:inherit;font:500 13px var(--sys);padding:6px 0;border-radius:7px;cursor:pointer}
+.segc button.on{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
+[data-theme=dark] .segc button.on,[data-theme=gray] .segc button.on{background:#636366}
+.sbody{padding:4px 18px 8px}
+.m{font:400 15px/1.42 var(--sys);padding:10px 14px;border-radius:18px;margin:8px 0}
+.m.s{background:rgba(255,255,255,.75);color:inherit;box-shadow:0 0 0 .5px rgba(0,0,0,.06);border-bottom-left-radius:6px}
+[data-theme=dark] .m.s,[data-theme=gray] .m.s{background:rgba(255,255,255,.08);color:#f2f2f7}
+.m.u{background:linear-gradient(180deg,#3a8bff,#0a6cff);color:#fff;border-bottom-right-radius:6px}
+.m blockquote{border-left:2px solid rgba(255,255,255,.6)}
+.meta{display:flex;opacity:.9;align-items:center;gap:6px;font:500 11px var(--sys);text-transform:uppercase;letter-spacing:.06em;color:rgba(60,60,67,.55);margin:14px 0 4px}
+.chips{padding:6px 18px 4px;gap:8px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips button{border:0;background:rgba(118,118,128,.12);font:500 13px var(--sys);padding:7px 12px;border-radius:999px}
+.chips button:hover{background:rgba(118,118,128,.2)}
+.ask{padding:10px 14px 16px;gap:0}
+.pill{flex:1;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.85);border-radius:999px;padding:4px 4px 4px 14px;box-shadow:0 0 0 .5px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.04)}
+[data-theme=dark] .pill,[data-theme=gray] .pill{background:rgba(118,118,128,.24);box-shadow:none}
+.pill input{flex:1;border:0!important;background:none!important;padding:8px 0!important;font:400 15px var(--sys)!important;color:inherit;outline:none}
+.pill .mic,.pill .send{border:0;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:inherit;background:none;flex:none}
+.pill .mic svg,.pill .send svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pill .send{background:#0a6cff;color:#fff}.pill .mic{opacity:.6}
+#tab{width:10px!important;height:92px!important;background:rgba(255,255,255,.92)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 0 0 .5px rgba(0,0,0,.15),0 0 14px rgba(163,123,255,.8),0 0 30px rgba(255,111,181,.45),0 0 48px rgba(90,200,250,.4)!important;gap:0}
+#tab:before{content:"";position:absolute;inset:-14px -16px;}
+#tab.r{right:3px!important;border-radius:6px!important}#tab.l{left:3px!important;border-radius:6px!important}
+#tab span,#tab i{display:none}
+#tab:after{content:"";width:3px;height:36px;border-radius:2px;background:linear-gradient(180deg,#ff9f6b,#a37bff,#5ac8fa);animation:glow 3s ease-in-out infinite}
+@keyframes glow{50%{opacity:.5}}
+.swbtn{background:none!important;color:var(--fg)!important;gap:7px;font-family:var(--sys)!important}
+.swbtn:hover{background:var(--line)!important}
+/* word card */
+.wc{background:rgba(255,255,255,.9);border-radius:22px;padding:0;margin:10px 0;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06);color:#1c1c1e}
+.wc .art{height:120px;position:relative;background:radial-gradient(120% 90% at 20% 10%,#fff4d6 0,#ffe0c2 35%,#f9d0e3 70%,#e0dcff 100%);display:grid;place-items:center}
+.wc .art svg{width:120px;height:96px}
+.wc .art .lbl2{position:absolute;left:14px;bottom:10px;font:600 10.5px var(--sys);letter-spacing:.08em;text-transform:uppercase;color:rgba(60,40,30,.5)}
+.wc .in{padding:16px 18px 18px}
+.wc .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.wc h3{font:600 34px/1.05 'Literata',Georgia,serif;margin:0;color:#1c1c1e;letter-spacing:-.01em}
+.wc .pos{font:italic 400 14px 'Literata',Georgia,serif;color:#8e8e93;margin-top:4px}
+.wc .play{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(180deg,#3a8bff,#0a6cff);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 14px rgba(10,108,255,.35)}
+.wc .play svg{width:20px;height:20px;fill:#fff;stroke:#fff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.wc .ph{font:500 14px var(--sys);color:#3a3a3c;margin:12px 0 10px;background:rgba(118,118,128,.1);display:inline-block;padding:4px 10px;border-radius:8px}
+.wc .syl{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 14px}
+.wc .syl span{border:0;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);border-radius:10px;padding:6px 11px;margin:0;font:600 17px 'Literata',serif;color:#1c1c1e}
+.wc .syl span:nth-child(4n+1){background:#fff1dd}.wc .syl span:nth-child(4n+3){background:#efe9ff}.wc .syl em{color:#c7c7cc;font-style:normal}
+.wc .sec{font:600 11px var(--sys);text-transform:uppercase;letter-spacing:.08em;color:#8e8e93;margin:0 0 4px}
+.wc .mean{font:400 15.5px/1.45 var(--sys);margin:0 0 14px;color:#1c1c1e}
+.wc .ex{font:italic 400 16px/1.5 'Literata',Georgia,serif;margin:0;padding-left:12px;border-left:3px solid #ffb86b;color:#3a3a3c}
+.wc .ex b{font-weight:600;font-style:italic;color:#1c1c1e;background:linear-gradient(transparent 60%,#ffe08a 60%)}
+.wc .acts{display:flex;gap:8px;margin-top:16px}.wc .acts button{flex:1;border:0;border-radius:12px;padding:9px;background:rgba(118,118,128,.12);font:500 13px var(--sys);cursor:pointer;color:#0a6cff}
+
+</style></head><body class="immersive">
+<div id="loading">Opening book…</div>
+<div id="viewer"></div>
+<button class="edge" id="pv" aria-label="Previous page"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+<button class="edge" id="nx" aria-label="Next page"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+<div id="bm"></div><div id="runhead"></div><div id="mini"></div>
+<header id="bar">
+ <button class="ib" id="back" title="Library"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+ <button class="ib" id="btoc" title="Contents"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+ <button class="ib" id="bsearch" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></button>
+ <div id="ttl"></div>
+ <button class="ib" id="baa" title="Appearance"><span style="font:600 16px 'Literata',serif">Aa</span></button>
+ <button class="ib" id="bmark" title="Bookmark"><svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4z"/></svg></button>
+ <button class="ib" id="bsw" title="Swati"><span class="orb sm" style="width:22px;height:22px"></span></button>
+</header>
+<footer id="foot"><input type="range" id="prog" min="0" max="1000" value="0" aria-label="Progress"><div id="pinfo"><span id="pchap"></span><span id="ppct"></span></div></footer>
+<div class="pop" id="aa">
+ <div class="row" style="justify-content:space-between"><button class="th" data-t="white" style="background:#fff;color:#111">Aa</button><button class="th" data-t="sepia" style="background:#f6efe1;color:#3b2f22">Aa</button><button class="th" data-t="gray" style="background:#4a4a4c;color:#eee">Aa</button><button class="th" data-t="dark" style="background:#121212;color:#ccc">Aa</button></div>
+ <div class="row"><label>Font</label><div class="seg" id="sfont"><button data-v="Literata" style="font-family:Literata">Literata</button><button data-v="Georgia" style="font-family:Georgia">Georgia</button><button data-v="Inter" style="font-family:Inter">Sans</button><button data-v="OpenDyslexic,Comic Sans MS,Inter">Easy</button></div></div>
+ <div class="row"><label>Size</label><div class="stp"><button data-d="-1">A−</button><span id="vsize"></span><button data-d="1">A+</button></div></div>
+ <div class="row"><label>Spacing</label><div class="seg" id="slh"><button data-v="1.4">Tight</button><button data-v="1.6">Normal</button><button data-v="1.9">Loose</button></div></div>
+ <div class="row"><label>Margins</label><div class="seg" id="smx"><button data-v="s">Narrow</button><button data-v="m">Normal</button><button data-v="l">Wide</button></div></div>
+ <div class="row"><label>Align</label><div class="seg" id="sjust"><button data-v="left">Left</button><button data-v="justify">Justify</button></div></div>
+ <div class="row"><label>Layout</label><div class="seg" id="sspread"><button data-v="auto">Two pages</button><button data-v="none">Single</button></div></div>
+</div>
+<div class="pop" id="side"><div class="tabs"><div class="seg" id="stabs"><button data-p="toc" class="on">Contents</button><button data-p="marks">Bookmarks</button><button data-p="hls">Highlights</button><button data-p="search">Search</button></div></div>
+ <div id="search" style="padding:0 12px 8px;display:none"><input id="sq" placeholder="Search in book" autocomplete="off"></div><div class="list" id="slist"></div></div>
+<div class="pop" id="sel"><button class="dot" data-c="#ffd54a" style="background:#ffd54a"></button><button class="dot" data-c="#8bd17c" style="background:#8bd17c"></button><button class="dot" data-c="#7cb8f2" style="background:#7cb8f2"></button><button class="dot" data-c="#f49ac1" style="background:#f49ac1"></button><span class="sep"></span><button class="tb" id="sdef">Define</button><button class="tb" id="sask">Ask Swati</button><button class="tb" id="scopy">Copy</button><button class="tb" id="srm" style="display:none;color:#d9453a">Remove</button></div>
+<div id="toast"></div>
+<aside id="swati" class="hidden">
+ <div class="grab" id="grab"><i></i></div>
+ <div class="sh" id="sh"><div class="orb"></div><div><b>Swati</b><small><span id="swsub">Reading coach</span></small></div><button id="stash" title="Tuck away"><svg viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6v12"/></svg></button></div>
+ <div class="segc" id="segc"><button class="on" data-p="chat">Ask</button><button data-p="words">Words</button><button data-p="notes">Highlights</button></div>
+ <div class="sbody" id="sbody"></div>
+ <div class="chips" id="chips"></div>
+ <form class="ask" id="ask"><div class="pill"><input id="q" placeholder="Ask Swati"><button type="button" class="mic" title="Speak"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button><button class="send" title="Send"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div></form>
+</aside>
+<div id="tab" title="Swati"></div>
+
+<script src="vendor/jszip.min.js"></script><script src="vendor/epub.min.js"></script><script src="common.js"></script><script src="swati.js"></script><script src="reader.js"></script>
+</body></html>

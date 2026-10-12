@@ -1,0 +1,67 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kitaabnama · Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f3ec;--fg:#1d1b19;--muted:#8b867f;--line:#0000001a;--accent:#C8862A;--wood:#e9dfcf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:'Inter',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:14px max(20px,calc(50% - 560px));background:rgba(247,243,236,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.logo{font:600 22px 'Literata',serif;flex:1}.logo i{color:var(--accent);font-style:normal}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:500}.btn.pri{background:var(--fg);color:#fff;border-color:var(--fg)}
+main{max-width:1120px;margin:0 auto;padding:24px 20px 80px}
+h2{font:600 22px 'Literata',serif;margin:34px 0 14px;display:flex;align-items:baseline;gap:10px}h2 small{font:400 13px 'Inter';color:var(--muted)}
+.hero{display:flex;gap:24px;align-items:center;background:#fff;border-radius:20px;padding:22px;box-shadow:0 1px 2px #0000000d,0 12px 40px #0000000f}
+.hero .cv{width:120px;flex:none}.hero .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h3{font:600 26px/1.15 'Literata',serif;margin:6px 0}.hero p{color:var(--muted);margin:0 0 14px;font-size:14px}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;max-width:320px;margin:10px 0 14px}.bar i{display:block;height:100%;background:var(--accent)}
+.row{display:flex;gap:18px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}.row .bk{width:116px;flex:none;scroll-snap-align:start}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:34px 26px;padding:24px 22px 0;background:linear-gradient(var(--bg),var(--bg)) padding-box;position:relative}
+.shelfwrap{background:#fff;border-radius:20px;padding-bottom:22px;box-shadow:0 1px 2px #0000000d,0 12px 40px #0000000f}
+.bk{display:block;position:relative;min-width:0}.bk .cv,.bk .cover{width:100%}.bk .cv{transition:transform .2s}.bk:hover .cv{transform:translateY(-4px)}
+.bk .cv:after{content:"";display:block;height:10px;margin:0 -13px;background:linear-gradient(var(--wood),#d8cab3);border-radius:2px;box-shadow:0 6px 10px -6px #0004}
+.row .bk .cv:after{display:none}
+.bk .n{font-size:13px;font-weight:600;margin-top:10px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.bk .m{font-size:12px;color:var(--muted);margin-top:2px}
+.bk .pc{position:absolute;top:6px;right:6px;z-index:3;background:#000a;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:9px}
+.bk .x{position:absolute;top:-8px;left:-8px;z-index:4;width:24px;height:24px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 4px #0003;display:none;font-size:14px;line-height:24px}.bk:hover .x{display:block}
+.empty{color:var(--muted);font-size:14px;padding:18px;background:#fff;border-radius:16px}
+#drop{position:fixed;inset:0;z-index:50;background:#c8862a22;border:3px dashed var(--accent);display:none;place-items:center;font:600 22px 'Literata',serif}#drop.show{display:grid}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000c;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none}#toast.show{opacity:1}
+@media (max-width:600px){.hero{padding:16px;gap:16px}.hero .cv{width:86px}.hero h3{font-size:20px}.shelf{grid-template-columns:repeat(3,1fr);gap:26px 14px;padding:18px 14px 0}.bk .n{font-size:12px}.btn span{display:none}}
+.hasimg .t,.hasimg .a{display:none}
+/*COVER*/
+</style></head><body>
+<header><div class="logo">Kitaab<i>nama</i></div><label class="btn pri"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Open EPUB file</span><input type="file" id="file" accept=".epub,application/epub+zip" hidden></label></header>
+<main>
+ <section id="cont"></section>
+ <h2>Recently opened <small id="rc"></small></h2><div id="recentrow"></div>
+ <h2>Bookshelf <small>Classics, free to read</small></h2><div class="shelfwrap"><div class="shelf" id="shelf"></div></div>
+ <div id="mine"></div>
+</main>
+<div id="drop">Drop an EPUB to add it</div><div id="toast"></div>
+<script src="vendor/jszip.min.js"></script><script src="vendor/epub.min.js"></script><script src="common.js"></script>
+<script>
+document.querySelector('style').textContent=document.querySelector('style').textContent.replace('.hasimg .t,.hasimg .a{display:none}
+/*COVER*/',COVER_CSS);
+const $=s=>document.querySelector(s);const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)};
+let IMPORTED=[],URLS={};
+function info(id){if(id.startsWith('idb:')){const r=IMPORTED.find(x=>'idb:'+x.id==id);if(!r)return null;const [c1,c2]=hashColor(r.title);return {id,title:r.title,author:r.author,c1,c2,v:2,img:URLS[r.id]}}const c=CATALOG.find(b=>b.id==id);return c&&Object.assign({},c)}
+function cv(b,size){let h=coverHTML(b,size);if(b.img)h=h.replace('class="cover','class="cover hasimg').replace('<div class="d"></div>','<div class="d"></div><img src="'+b.img+'" alt="">');return '<div class="cv">'+h+'</div>'}
+function pctOf(id){return KN.book(id).pct||0}
+function card(b,cls,del){const p=pctOf(b.id);return '<a class="bk" href="reader.html?book='+encodeURIComponent(b.id)+'">'+(del?'<button class="x" data-del="'+b.id+'" title="Remove">×</button>':'')+cv(b,cls)+(p>0.005?'<span class="pc">'+Math.round(p*100)+'%</span>':'')+'<div class="n">'+esc(b.title)+'</div><div class="m">'+esc(b.author||'')+'</div></a>'}
+function render(){const rec=KN.get('recent',[]).map(r=>info(r.id)&&Object.assign(info(r.id),{ts:r.ts,chapter:r.chapter})).filter(Boolean);
+ const c=rec[0];$('#cont').innerHTML=c?'<a class="hero" href="reader.html?book='+encodeURIComponent(c.id)+'">'+cv(c,13)+'<div><div class="k">Continue reading</div><h3>'+esc(c.title)+'</h3><p>'+esc(c.author||'')+(c.chapter?' · '+esc(c.chapter):'')+'</p><div class="bar"><i style="width:'+Math.round(pctOf(c.id)*100)+'%"></i></div><span class="btn pri">Resume · '+Math.round(pctOf(c.id)*100)+'%</span></div></a>':
+ '<div class="hero"><div><div class="k">Welcome</div><h3>Pick a book to start reading</h3><p>Your place, bookmarks and highlights are saved on this device.</p></div></div>';
+ $('#rc').textContent=rec.length?rec.length+' book'+(rec.length>1?'s':''):'';
+ $('#recentrow').innerHTML=rec.length?'<div class="row">'+rec.map(b=>card(b,12)).join('')+'</div>':'<div class="empty">Books you open will appear here.</div>';
+ $('#shelf').innerHTML=CATALOG.map(b=>card(b,13)).join('');
+ $('#mine').innerHTML=IMPORTED.length?'<h2>My files <small>Stored on this device</small></h2><div class="shelfwrap"><div class="shelf">'+IMPORTED.map(r=>card(info('idb:'+r.id),13,true)).join('')+'</div></div>':'';
+ document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.preventDefault();e.stopPropagation();if(!confirm('Remove this book from this device?'))return;const id=b.dataset.del.slice(4);await IDB.del(id);localStorage.removeItem('kn:book:'+b.dataset.del);localStorage.removeItem('kn:loc:'+b.dataset.del);KN.set('recent',KN.get('recent',[]).filter(r=>r.id!=b.dataset.del));load()})}
+async function load(){try{IMPORTED=await IDB.all()}catch(e){IMPORTED=[]}IMPORTED.forEach(r=>{if(r.cover&&!URLS[r.id])URLS[r.id]=URL.createObjectURL(r.cover)});render()}
+async function importFile(f){if(!f)return;toast('Adding '+f.name+'…');try{const data=await f.arrayBuffer();const bk=ePub(data);await bk.ready;const md=bk.packaging.metadata;let cover=null;
+ try{const u=await bk.coverUrl();if(u)cover=await (await fetch(u)).blob()}catch(e){}
+ const id=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-1',data))).slice(0,8).map(x=>x.toString(16).padStart(2,'0')).join('');
+ await IDB.put({id,title:md.title||f.name.replace(/\.epub$/i,''),author:md.creator||'',data,cover,added:Date.now()});bk.destroy();location.href='reader.html?book=idb:'+id}catch(e){console.error(e);toast('That file could not be opened as an EPUB')}}
+$('#file').onchange=e=>importFile(e.target.files[0]);
+addEventListener('dragover',e=>{e.preventDefault();$('#drop').classList.add('show')});addEventListener('dragleave',e=>{if(!e.relatedTarget)$('#drop').classList.remove('show')});
+addEventListener('drop',e=>{e.preventDefault();$('#drop').classList.remove('show');importFile(e.dataTransfer.files[0])});
+addEventListener('pageshow',load);
+</script></body></html>
