@@ -1,0 +1,162 @@
+<!doctype html><html lang="en"><head><title>Kitaabnama · Library</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--sys:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif;--serif:'Literata',Georgia,serif;--bg:#f5f4f1;--card:#fff;--fg:#1c1c1e;--sec:rgba(60,60,67,.6);--hair:rgba(60,60,67,.14);--blue:#0a6cff}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0;font-family:var(--sys);background:var(--bg);color:var(--fg);letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.cover{position:relative;aspect-ratio:2/3;border-radius:4px 8px 8px 4px;overflow:hidden;background:var(--c1);box-shadow:0 1px 1px rgba(0,0,0,.08),0 10px 24px rgba(0,0,0,.16);color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:1em .8em .8em;transition:transform .25s}
+.cover:hover{transform:translateY(-3px)}
+.cover:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.18) 0,rgba(255,255,255,.12) 3%,rgba(0,0,0,0) 7%),linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.12));pointer-events:none;z-index:2}
+.cover{min-width:0}.cover .t{position:relative;z-index:1;font:600 1.1em/1.12 var(--serif);text-wrap:balance;overflow-wrap:break-word;hyphens:manual}.cover.tiny .t,.cover.tiny .a{display:none}.cover.small .a{display:none}
+.cover .a{position:relative;z-index:1;font:500 .62em var(--sys);letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.cover .d{position:absolute;z-index:0}
+.v0 .d{width:80%;aspect-ratio:1;border-radius:50%;background:var(--c2);right:-25%;bottom:12%;opacity:.9}
+.v1 .d{left:0;right:0;bottom:22%;height:28%;background:repeating-linear-gradient(0deg,var(--c2) 0 3px,transparent 3px 9px);opacity:.75}
+.v2 .d{width:110%;height:46%;left:-5%;bottom:-8%;background:var(--c2);border-radius:50% 50% 0 0;opacity:.95}
+.v3 .d{inset:10%;border:2px solid var(--c2);border-radius:999px 999px 6px 6px;opacity:.85}
+.v2 .a,.v3 .a{color:#fff}
+.prog{height:4px;border-radius:2px;background:var(--hair);overflow:hidden}.prog i{display:block;height:100%;background:var(--fg);border-radius:2px}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 15px var(--sys);flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.sic{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.orb{width:18px;height:18px;border-radius:50%;background:conic-gradient(from var(--a,0deg),#ff9f6b,#ff6fb5,#a37bff,#5ac8fa,#7ee0a1,#ffd36b,#ff9f6b);animation:spin 6s linear infinite;position:relative;flex:none}
+.orb:after{content:"";position:absolute;inset:2px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffffff2,#ffffff59 45%,#fff0 70%)}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}@keyframes spin{to{--a:360deg}}
+.h1{font:700 34px var(--sys);letter-spacing:-.03em;margin:0}.h2{font:700 22px var(--sys);letter-spacing:-.02em;margin:0}
+.see{color:var(--blue);font:500 15px var(--sys)}
+.secc{color:var(--sec)}
+.segc{display:inline-flex;padding:2px;background:rgba(118,118,128,.12);border-radius:9px}.segc button{border:0;background:none;font:500 13.5px var(--sys);padding:6px 18px;border-radius:7px;cursor:pointer;color:var(--fg)}.segc button.on{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
+.tabbar{display:none}
+@media (max-width:760px){.tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:rgba(249,249,249,.8);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-top:.5px solid var(--hair);padding:8px 0 22px;justify-content:space-around;z-index:10}.tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;font:500 10px var(--sys);color:#8e8e93}.tabbar a.on{color:var(--blue)}.tabbar .sic{width:24px;height:24px}}
+</style>
+<script>
+const B=[["Alice's Adventures in Wonderland", "Lewis Carroll", "#b8323f", "#f2a65a", 0], ["Peter Pan", "J. M. Barrie", "#1f5f8b", "#7cc6e8", 1], ["The Wonderful Wizard of Oz", "L. Frank Baum", "#1e7a4c", "#e8d34a", 2], ["The Secret Garden", "Frances H. Burnett", "#4d7a3a", "#f0c7d6", 3], ["The Jungle Book", "Rudyard Kipling", "#c2621f", "#2f4a2a", 1], ["Black Beauty", "Anna Sewell", "#222831", "#c9a86a", 0], ["Heidi", "Johanna Spyri", "#d4573e", "#fbe3b0", 2], ["Pinocchio", "Carlo Collodi", "#e3a72f", "#7b2d26", 3], ["The Velveteen Rabbit", "Margery Williams", "#8a6fb8", "#f6e3c9", 0], ["Treasure Island", "R. L. Stevenson", "#13324b", "#e0b04f", 1], ["Just So Stories", "Rudyard Kipling", "#a8742a", "#f4e6c4", 2], ["Aesop's Fables", "Aesop", "#6b2f4a", "#f1c27d", 3], ["Anne of Green Gables", "L. M. Montgomery", "#2f7d6d", "#f39c6b", 0], ["The Tale of Peter Rabbit", "Beatrix Potter", "#7aa0c4", "#f7f1e3", 1], ["Little Women", "Louisa May Alcott", "#7a3b5c", "#f5d0c5", 2], ["Grimm's Fairy Tales", "Brothers Grimm", "#2b2d42", "#d9a441", 3]],P=[["Aarav", "Class 4B", "#ff9f6b", [4, 9, 1, 13], 4, 62, "finished The Jungle Book"], ["Meera", "Class 4B", "#a37bff", [3, 8, 6, 14], 3, 35, "started The Secret Garden"], ["Kabir", "Class 5A", "#5ac8fa", [9, 2, 15, 10], 9, 80, "highlighted 12 passages in Treasure Island"], ["Ishita", "Class 4B", "#7ee0a1", [12, 6, 3, 0], 12, 18, "added Anne of Green Gables to her shelf"], ["Zoya", "Class 4A", "#ff6fb5", [13, 8, 11, 5], 13, 90, "is on a 6-day reading streak"], ["Vihaan", "Class 5A", "#ffd36b", [15, 4, 9, 7], 15, 47, "asked Swati about the Brothers Grimm"]];
+function cover(i,size){const b=B[i];const z=size||15;return '<div class="cover v'+b[4]+(z<9?' tiny':z<11?' small':'')+'" style="--c1:'+b[2]+';--c2:'+b[3]+';font-size:'+(size||15)+'px"><div class="d"></div><div class="t">'+b[0]+'</div><div class="a">'+b[1]+'</div></div>'}
+const I={home:'<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/>',lib:'<path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.5l3.8 1 -3.8 14.6-3.8-1z"/>',people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.7"/><path d="M16 14.6c2.7-.3 4.8 1.3 5.5 4.4"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/>',chev:'<path d="M9 6l6 6-6 6"/>',flame:'<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-3.6-2.8-5.6-3.5-9.3-2 1.2-3.3 3.3-3.3 5.4-1.4-.7-2.2-2.1-2.3-3.4C7.400 9.700 5.500 12 5.500 14.800 5.500 18.400 8 21 12 21z"/>',bell:'<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15zM10 20a2 2 0 004 0"/>'};
+const ic=(k,c)=>'<svg class="sic '+(c||'')+'" viewBox="0 0 24 24">'+I[k]+'</svg>';
+</script>
+<style>
+body{background:linear-gradient(180deg,#faf8f4,#f1ede6) fixed;min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:rgba(250,248,244,.78);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);border-bottom:.5px solid var(--hair);padding:12px 48px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px}
+.brand{font:700 18px var(--sys);letter-spacing:-.02em}.brand span{color:#c8862a}
+.srch{justify-self:end;display:flex;align-items:center;gap:8px;background:rgba(118,118,128,.12);border-radius:10px;padding:7px 12px;color:var(--sec);font-size:14px;width:220px}.srch .sic{width:16px;height:16px}.srch input{border:0;background:none;font:14px var(--sys);outline:none;width:100%;color:var(--fg)}
+.segc button{padding:6px 22px}
+main{max-width:1180px;margin:0 auto;padding:30px 48px 110px}
+.view{display:none;animation:fade .35s ease}.view.on{display:block}@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;gap:20px}
+.hero h1{font:600 34px var(--serif);letter-spacing:-.02em;margin:0}.hero .secc{margin-top:6px}
+.stats{display:flex;gap:28px}.stats div{text-align:right}.stats b{display:block;font:600 24px var(--serif)}.stats small{color:var(--sec);font-size:12.5px}
+.strip{display:flex;gap:14px;margin:22px 0 38px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px}.strip::-webkit-scrollbar{display:none}
+.rc{flex:none;display:flex;gap:14px;align-items:center;background:rgba(255,255,255,.75);border-radius:14px;padding:10px 16px 10px 10px;box-shadow:0 0 0 .5px var(--hair);width:min(340px,84vw);cursor:pointer;transition:box-shadow .2s}.rc:hover{box-shadow:0 0 0 .5px var(--hair),0 8px 20px rgba(0,0,0,.06)}
+.rc .cover{width:50px}.rc .tx{flex:1;min-width:0}.rc b{font:600 14.5px var(--serif);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rc small{color:var(--sec);font-size:12.5px}.rc .prog{margin-top:8px}.rc .pct{font:600 13px var(--sys);color:var(--sec)}
+.shelfrow{margin-bottom:50px}.shelfrow h3{font:600 13px var(--sys);text-transform:uppercase;letter-spacing:.08em;color:var(--sec);margin:0 0 14px;display:flex;justify-content:space-between;align-items:baseline}.shelfrow h3 .see{text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer}
+.sc{overflow-x:auto;overflow-y:visible;scrollbar-width:none;padding-top:14px;margin-top:-14px;padding-bottom:22px}.sc::-webkit-scrollbar{display:none}
+.ledge{position:relative;display:inline-flex;min-width:100%;align-items:flex-end;gap:16px;padding:0 26px;min-height:196px}
+.ledge:after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:14px;border-radius:3px;background:linear-gradient(180deg,#fff,#ece6dc);box-shadow:0 10px 18px rgba(80,60,30,.16),0 0 0 .5px rgba(0,0,0,.06)}
+.bk{position:relative;flex:none;cursor:pointer;transition:transform .25s}.bk:hover{transform:translateY(-6px)}
+.bk .cover{width:122px;box-shadow:0 1px 1px rgba(0,0,0,.08),6px 6px 14px rgba(0,0,0,.18)}.bk .cover:hover{transform:none}
+.bk.lean{transform:rotate(-6deg);transform-origin:bottom left;margin-left:8px}.bk.lean:hover{transform:rotate(-3deg) translateY(-4px)}
+.spine{width:30px;height:184px;border-radius:3px;background:var(--c1);box-shadow:inset -3px 0 0 rgba(0,0,0,.15),inset 3px 0 0 rgba(255,255,255,.12),3px 4px 10px rgba(0,0,0,.15);color:#fff;writing-mode:vertical-rl;font:600 11px var(--serif);display:flex;align-items:center;justify-content:center;padding:8px 0;white-space:nowrap;overflow:hidden}
+.badge{position:absolute;top:-8px;right:-8px;z-index:3;background:#fff;border-radius:999px;font:600 11px var(--sys);padding:3px 8px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.empty{color:var(--sec);font-size:14px;padding:60px 0 30px}
+/* recent */
+.list{background:rgba(255,255,255,.75);border-radius:18px;box-shadow:0 0 0 .5px var(--hair);overflow:hidden;margin-bottom:28px}
+.li{display:flex;gap:16px;align-items:center;padding:14px 18px;border-bottom:.5px solid var(--hair);cursor:pointer}.li:last-child{border:0}.li:hover{background:rgba(118,118,128,.05)}
+.li .cover{width:52px}.li .tx{flex:1;min-width:0}.li b{font:600 16px var(--serif);display:block}.li small{color:var(--sec);font-size:13px}
+.li .pw{width:180px}.li .pw .row{display:flex;justify-content:space-between;font:500 12px var(--sys);color:var(--sec);margin-top:6px}
+.pill{border:0;background:var(--fg);color:#fff;font:600 13px var(--sys);padding:8px 16px;border-radius:999px;cursor:pointer}
+.pill.ghost{background:rgba(118,118,128,.12);color:var(--fg)}.pill.blue{background:rgba(10,108,255,.1);color:var(--blue)}
+.grp{font:600 13px var(--sys);text-transform:uppercase;letter-spacing:.08em;color:var(--sec);margin:6px 0 10px}
+/* community */
+.comm{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;margin-top:20px}
+.cs{background:rgba(255,255,255,.7);border-radius:20px;padding:18px 20px 32px;box-shadow:0 0 0 .5px var(--hair);cursor:pointer;transition:box-shadow .2s,transform .2s}.cs:hover{transform:translateY(-2px);box-shadow:0 0 0 .5px var(--hair),0 14px 30px rgba(0,0,0,.07)}
+.who{display:flex;gap:10px;align-items:center}.who b{font:600 15px var(--sys);display:block}.who small{color:var(--sec);font-size:12.5px}.who .pill{margin-left:auto}
+.cs .who{margin-bottom:16px}.cs .ledge{min-height:112px;padding:0 14px;gap:9px}.cs .bk .cover{width:62px}.cs .spine{height:94px;width:18px;font-size:8px}
+.cs .nowl{font:500 12.5px var(--sys);color:var(--sec);margin-top:26px}.cs .nowl b{color:var(--fg)}
+/* friend */
+.back{display:inline-flex;align-items:center;gap:4px;color:var(--blue);font:500 15px var(--sys);cursor:pointer;margin-bottom:18px}.back .sic{width:18px;height:18px}
+.fhero{display:flex;gap:18px;align-items:center;margin-bottom:28px}.fhero .av{width:72px;height:72px;font-size:30px}.fhero h1{font:600 30px var(--serif);margin:0}
+.fnow{display:flex;gap:24px;background:rgba(255,255,255,.75);border-radius:22px;padding:22px;box-shadow:0 0 0 .5px var(--hair);margin-bottom:44px;align-items:center}
+.fnow .cover{width:140px;flex:none}.fnow .lbl{font:600 11px var(--sys);text-transform:uppercase;letter-spacing:.08em;color:var(--sec)}.fnow h2{font:600 26px/1.2 var(--serif);margin:6px 0 2px}.fnow .prog{max-width:320px;margin:16px 0 6px}.fnow p{color:#3a3a3c;line-height:1.5;max-width:560px}
+.quote{display:flex;gap:10px;align-items:flex-start;background:rgba(118,118,128,.07);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:14px;line-height:1.45;max-width:560px}.quote .orb{margin-top:1px}
+/* sheet */
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}#scrim.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;z-index:41;left:50%;top:50%;width:min(720px,94vw);transform:translate(-50%,-46%) scale(.97);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.8,.2,1);background:rgba(252,251,249,.92);backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.3),0 0 0 .5px rgba(0,0,0,.1);padding:28px;display:flex;gap:28px}
+#sheet.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+#sheet .grab{display:none}#sheet .x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(118,118,128,.14);cursor:pointer;display:grid;place-items:center}#sheet .x .sic{width:14px;height:14px}
+#sheet .cv{width:200px;flex:none}#sheet .cv .cover{width:200px}
+#sheet .bd{flex:1;min-width:0;display:flex;flex-direction:column}
+#sheet h2{font:600 28px/1.15 var(--serif);margin:4px 30px 4px 0;letter-spacing:-.01em}#sheet .au{color:var(--sec);font-size:15px}
+#sheet .meta{display:flex;gap:8px;margin:14px 0}#sheet .meta span{font:500 12px var(--sys);background:rgba(118,118,128,.1);padding:4px 10px;border-radius:999px;color:#3a3a3c}
+#sheet .bl{font:400 15.5px/1.55 var(--sys);color:#2c2c2e;margin:0 0 14px}
+#sheet .pr{margin:4px 0 16px}#sheet .pr .row{display:flex;justify-content:space-between;font:500 12.5px var(--sys);color:var(--sec);margin-top:6px}
+#sheet .acts{display:flex;gap:10px;margin-top:auto;padding-top:16px}#sheet .acts .pill{padding:11px 22px;font-size:14.5px}
+#sheet .acts .pill.blue.on{background:var(--blue);color:#fff}
+#sheet .quote{margin-top:0}
+#toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:rgba(30,30,30,.86);backdrop-filter:blur(20px);color:#fff;font:500 14px var(--sys);padding:10px 18px;border-radius:999px;opacity:0;transition:.3s;z-index:60;pointer-events:none}#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:760px){header{padding:10px 16px;grid-template-columns:1fr auto}header .segc{grid-column:1/-1;grid-row:2;width:100%}header .segc button{flex:1;padding:6px 0}.srch{width:150px}
+main{padding:18px 16px 110px}.hero{flex-direction:column;align-items:flex-start;gap:12px}.hero h1{font-size:30px}.stats{gap:20px}.stats div{text-align:left}
+.ledge{gap:10px;padding:0 12px;min-height:150px}.bk .cover{width:90px}.spine{height:136px;width:22px;font-size:9.5px}
+.li .pw{display:none}.li .pill{padding:7px 12px}.comm{grid-template-columns:1fr}.fnow{flex-direction:column;align-items:flex-start}.fnow .cover{width:110px}
+#sheet{left:0;right:0;top:auto;bottom:0;width:100%;transform:translateY(100%);border-radius:24px 24px 0 0;flex-direction:column;gap:16px;padding:10px 20px 30px;max-height:92vh;overflow:auto}#sheet.on{transform:none}
+#sheet .grab{display:block;width:36px;height:5px;border-radius:3px;background:rgba(60,60,67,.3);margin:0 auto 6px}#sheet .top{display:flex;gap:16px;align-items:flex-end}#sheet .cv,#sheet .cv .cover{width:110px}#sheet h2{font-size:22px}}
+</style></head><body>
+<header><div class="brand">Kitaab<span>nama</span></div><div class="segc" id="tabs"><button data-v="shelf">My Shelf</button><button data-v="recent">Recent</button><button data-v="community">Community</button></div><label class="srch"><svg class="sic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="Search books"></label></header>
+<main>
+<section class="view" id="v-shelf">
+ <div class="hero"><div><h1>Radha's Shelf</h1><div class="secc">A quiet place for the books you love.</div></div><div class="stats"><div><b>12</b><small>books read</small></div><div><b>4</b><small>day streak</small></div><div><b>38</b><small>new words</small></div></div></div>
+ <div class="strip" id="strip"></div>
+ <div class="shelfrow"><h3><span>Currently reading</span></h3><div class="sc"><div class="ledge" id="s-reading"></div></div></div>
+ <div class="shelfrow"><h3><span>Want to read</span><span class="see" onclick="go('community')">Find more</span></h3><div class="sc"><div class="ledge" id="s-want"></div></div></div>
+ <div class="shelfrow"><h3><span>Finished · Favourites</span><span class="see" onclick="toast('Edit mode coming soon')">Edit Shelf</span></h3><div class="sc"><div class="ledge" id="s-done"></div></div></div>
+</section>
+<section class="view" id="v-recent"><div class="hero" style="margin-bottom:22px"><div><h1>Recently Opened</h1><div class="secc">Pick up right where you left off.</div></div></div><div id="rlist"></div></section>
+<section class="view" id="v-community"><div class="hero"><div><h1>Class 4B Shelves</h1><div class="secc">See what your classmates are reading this week.</div></div></div><div class="comm" id="comm"></div></section>
+<section class="view" id="v-friend"></section>
+</main>
+<div id="scrim"></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+<nav class="tabbar"><a data-v="shelf"><svg class="sic" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.5l3.8 1-3.8 14.6-3.8-1z"/></svg>My Shelf</a><a data-v="recent"><svg class="sic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Recent</a><a data-v="community"><svg class="sic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.7"/><path d="M16 14.6c2.7-.3 4.8 1.3 5.5 4.4"/></svg>Community</a></nav>
+<script>
+const BL=["Alice tumbles down a rabbit-hole into a world of talking animals, shrinking potions and a very mad tea-party.", "The boy who never grows up whisks Wendy and her brothers away to Neverland, home of pirates and mermaids.", "A cyclone carries Dorothy to the magical Land of Oz, where she meets a Scarecrow, a Tin Woodman and a Lion.", "Mary finds a hidden key to a locked garden, and brings it, and herself, back to life.", "Mowgli grows up in the Indian jungle, raised by wolves and taught by Baloo the bear and Bagheera the panther.", "A beautiful horse tells the story of his own life, from a happy meadow to the busy streets of London.", "Heidi goes to live with her grandfather high in the Swiss Alps, among goats, meadows and mountain air.", "A wooden puppet longs to become a real boy, if only he could stop telling fibs.", "A toy rabbit learns that being loved is what makes you real.", "Young Jim Hawkins sets sail with a map, a crew of pirates and the unforgettable Long John Silver.", "How the elephant got its trunk, how the leopard got its spots, and other wonderfully silly tales.", "Short stories with clever animals and big lessons, from the tortoise and the hare to the boy who cried wolf.", "Red-haired, talkative Anne arrives at Green Gables and changes everyone's life for the better.", "Naughty Peter squeezes into Mr. McGregor's garden. Will he get out again?", "Four sisters, Meg, Jo, Beth and Amy, grow up together through hard times and happy ones.", "Princesses, witches, talking frogs and enchanted forests, the classic fairy tales."],SW=["You're 30% in. The golden key is about to matter, so keep reading!", "Kabir and Zoya both loved this one. You like flying stories, so try it.", "Another magical land, like Wonderland. A perfect next read after Alice.", "Meera is reading this right now. You could talk about it together.", "Lots of animals and adventure, two of your favourite things.", "A gentle, thoughtful story. Great for quiet evenings.", "Mountains, goats and a brave girl. You might love Heidi.", "Funny and a little bit spooky. Good for reading aloud.", "Short and sweet. You could finish it in one sitting.", "Pirates and treasure maps! Kabir says it's the best book ever.", "Each story takes about 10 minutes. Perfect for bedtime.", "Tiny stories with big ideas. Try one a day.", "Anne talks as much as Alice! You'll like her.", "You finished this last week. Want to read it to a younger friend?", "A longer book. Try a chapter a day.", "Classic tales you might already know, told the old way."];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ST=Object.assign({reading:{0:30,1:62,13:88},want:[2,8,9,6],done:[14,15,3,12,10,11,4,7],recent:[[0,'2 hours ago','today'],[1,'Yesterday, 7:40 PM','week'],[13,'Sunday','week'],[3,'Last Tuesday','earlier'],[10,'2 weeks ago','earlier']]},JSON.parse(localStorage.knlib||'{}'));
+const save=()=>localStorage.knlib=JSON.stringify(ST);
+const spineIdx=new Set([5,9,11,14,15,12,7,4]);
+function bk(i,opt={}){const sp=opt.spine??spineIdx.has(i);const pct=ST.reading[i];
+ return '<div class="bk'+(opt.lean?' lean':'')+'" data-b="'+i+'"'+(opt.f!=null?' data-f="'+opt.f+'"':'')+'>'+(sp?'<div class="spine" style="--c1:'+B[i][2]+'">'+B[i][0]+'</div>':cover(i,opt.z||(innerWidth<=760?12.5:14)))+(pct&&opt.badge!==false&&!sp?'<span class="badge">'+pct+'%</span>':'')+'</div>'}
+function render(){
+ $('#strip').innerHTML=ST.recent.slice(0,3).map(([i,w])=>'<div class="rc" data-b="'+i+'">'+cover(i,7)+'<div class="tx"><b>'+B[i][0]+'</b><small>Opened '+w.toLowerCase()+'</small><div class="prog"><i style="width:'+(ST.reading[i]||100)+'%"></i></div></div><span class="pct">'+(ST.reading[i]?ST.reading[i]+'%':'Done')+'</span></div>').join('');
+ const r=Object.keys(ST.reading).map(Number);
+ $('#s-reading').innerHTML=r.map(i=>bk(i,{spine:false})).join('')||'<div class="empty">Nothing here yet.</div>';
+ $('#s-want').innerHTML=ST.want.map((i,k)=>bk(i,{spine:k%3==2,lean:k==ST.want.length-1&&ST.want.length>2})).join('')||'<div class="empty">Tap “Add to shelf” on any book to save it here.</div>';
+ $('#s-done').innerHTML=ST.done.map(i=>bk(i)).join('');
+ const g={today:'Today',week:'This week',earlier:'Earlier'};
+ $('#rlist').innerHTML=Object.keys(g).map(k=>{const it=ST.recent.filter(x=>x[2]==k);return it.length?'<div class="grp">'+g[k]+'</div><div class="list">'+it.map(([i,w])=>{const p=ST.reading[i];return '<div class="li" data-b="'+i+'">'+cover(i,7)+'<div class="tx"><b>'+B[i][0]+'</b><small>'+B[i][1]+' · '+w+'</small></div><div class="pw"><div class="prog"><i style="width:'+(p||100)+'%"></i></div><div class="row"><span>'+(p?p+'%':'Finished')+'</span><span>'+(p?Math.round((100-p)*.9)+' min left':'')+'</span></div></div><button class="pill'+(p?'':' ghost')+'" data-read="'+i+'">'+(p?'Continue':'Read again')+'</button></div>'}).join('')+'</div>':''}).join('');
+ $('#comm').innerHTML=P.map((p,k)=>'<div class="cs" data-friend="'+k+'"><div class="who"><div class="av" style="background:'+p[2]+'">'+p[0][0]+'</div><div><b>'+p[0]+'\u2019s shelf</b><small>'+p[1]+' · '+(8+k*3)+' books</small></div><button class="pill blue">View</button></div><div class="sc" style="padding-bottom:16px"><div class="ledge">'+[p[4],...p[3].filter(x=>x!=p[4])].concat([(k*5+3)%16,(k*3+7)%16]).slice(0,6).map((i,j)=>bk(i,{z:8,spine:j%2==1,badge:false,f:k})).join('')+'</div></div><div class="nowl">Reading <b>'+B[p[4]][0]+'</b> · '+p[5]+'%</div></div>').join('');
+}
+function friend(k){const p=P[k];const all=[...new Set([p[4],...p[3],(k*5+3)%16,(k*3+7)%16,(k*7+1)%16,(k*2+9)%16])];const done=all.slice(1);
+ $('#v-friend').innerHTML='<a class="back" onclick="go(\'community\')"><svg class="sic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Class 4B</a><div class="fhero"><div class="av" style="background:'+p[2]+'">'+p[0][0]+'</div><div><h1>'+p[0]+'\u2019s Shelf</h1><div class="secc">'+p[1]+' · '+(8+k*3)+' books · '+p[6]+'</div></div><button class="pill blue" style="margin-left:auto" onclick="this.textContent=this.textContent==\'Follow\'?\'Following\':\'Follow\'">Follow</button></div>'
+ +'<div class="fnow" data-b="'+p[4]+'">'+cover(p[4],15)+'<div><div class="lbl">Reading now</div><h2>'+B[p[4]][0]+'</h2><div class="secc">'+B[p[4]][1]+'</div><div class="prog"><i style="width:'+p[5]+'%"></i></div><div class="secc" style="font-size:13px">'+p[5]+'% · read today</div><div class="quote"><span class="orb"></span><span><b>Swati says</b> '+p[0]+' and you both love '+(['adventure','gardens','pirates','animals','magic','fairy tales'][k])+'. Ask '+p[0]+' about this one!</span></div></div></div>'
+ +'<div class="shelfrow"><h3><span>Finished</span></h3><div class="sc"><div class="ledge">'+done.map((i,j)=>bk(i,{spine:j%3==1,badge:false})).join('')+'</div></div></div>'
+ +'<div class="shelfrow"><h3><span>Up next</span></h3><div class="sc"><div class="ledge">'+[(k+11)%16,(k+5)%16,(k+13)%16].map((i,j)=>bk(i,{badge:false,lean:j==2})).join('')+'</div></div></div>'}
+function go(v,arg){if(v=='friend')friend(arg);$$('.view').forEach(x=>x.classList.toggle('on',x.id=='v-'+v));const t=v=='friend'?'community':v;$$('#tabs button,.tabbar a').forEach(b=>b.classList.toggle('on',b.dataset.v==t));
+ const h=v=='friend'?'#friend/'+arg:'#'+v;if(location.hash!=h)history.pushState(0,'',h);scrollTo(0,0)}
+$$('#tabs button,.tabbar a').forEach(b=>b.onclick=()=>go(b.dataset.v));
+const READER='../mockup/index.html';
+function openBook(i){if(i==0){location.href=READER}else toast('Opening '+B[i][0]+'…  (only Alice is in this prototype)')}
+function sheet(i){const p=ST.reading[i],done=ST.done.includes(i),want=ST.want.includes(i);const tags=[['Magic','Funny'],['Adventure','Flying'],['Magic','Journey'],['Nature','Friendship'],['Animals','Adventure'],['Animals','Gentle'],['Mountains','Family'],['Funny','Magic'],['Toys','Short read'],['Pirates','Adventure'],['Animals','Funny'],['Short reads','Animals'],['Friendship','Funny'],['Animals','Short read'],['Family','Long read'],['Fairy tales','Magic']][i];
+ $('#sheet').innerHTML='<div class="grab"></div><button class="x" onclick="closeSheet()"><svg class="sic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="top"><div class="cv">'+cover(i,innerWidth<=760?12:20)+'</div>'+(innerWidth<=760?'<div><h2>'+B[i][0]+'</h2><div class="au">'+B[i][1]+'</div></div>':'')+'</div><div class="bd">'+(innerWidth>760?'<div class="secc" style="font:600 11px var(--sys);text-transform:uppercase;letter-spacing:.08em">'+(p?'Reading':done?'Finished':want?'Want to read':'Book')+'</div><h2>'+B[i][0]+'</h2><div class="au">'+B[i][1]+'</div>':'')+'<div class="meta">'+tags.map(t=>'<span>'+t+'</span>').join('')+'<span>Ages 7+</span><span>Public domain</span></div><p class="bl">'+BL[i]+'</p>'+(p?'<div class="pr"><div class="prog"><i style="width:'+p+'%"></i></div><div class="row"><span>'+p+'% read</span><span>'+Math.round((100-p)*.9)+' min left</span></div></div>':'')+'<div class="quote"><span class="orb"></span><span><b>Swati says</b> '+SW[i]+'</span></div><div class="acts"><button class="pill" onclick="openBook('+i+')">'+(p?'Continue Reading':done?'Read Again':'Read')+'</button>'+(p||done?'':'<button class="pill blue'+(want?' on':'')+'" onclick="toggleWant('+i+')">'+(want?'On your shelf':'Add to shelf')+'</button>')+'</div></div>';
+ $('#sheet').classList.add('on');$('#scrim').classList.add('on')}
+function closeSheet(){$('#sheet').classList.remove('on');$('#scrim').classList.remove('on')}
+function toggleWant(i){const k=ST.want.indexOf(i);k<0?ST.want.push(i):ST.want.splice(k,1);save();render();sheet(i);toast(k<0?'Added to Want to read':'Removed from shelf')}
+$('#scrim').onclick=closeSheet;addEventListener('keydown',e=>e.key=='Escape'&&closeSheet());
+document.addEventListener('click',e=>{const r=e.target.closest('[data-read]');if(r){e.stopPropagation();return openBook(+r.dataset.read)}
+ const f=e.target.closest('.cs');if(f&&!e.target.closest('.bk'))return go('friend',+f.dataset.friend);
+ const bkEl=e.target.closest('.bk');if(bkEl&&bkEl.dataset.f!=null&&$('#v-community').classList.contains('on'))return go('friend',+bkEl.dataset.f);
+ const b=e.target.closest('[data-b]');if(b&&!e.target.closest('#sheet'))sheet(+b.dataset.b)});
+$('#q').oninput=e=>{const q=e.target.value.toLowerCase();if(!q)return;const i=B.findIndex(b=>b[0].toLowerCase().includes(q));if(i>=0&&q.length>2){clearTimeout(window._q);window._q=setTimeout(()=>sheet(i),500)}};
+let tt;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),1800)}
+render();function route(){const h=location.hash.slice(1);if(h.startsWith('friend/'))go('friend',+h.split('/')[1]);else go(['shelf','recent','community'].includes(h)?h:'shelf')}route();addEventListener('hashchange',route);addEventListener('popstate',route);
+</script></body></html>
