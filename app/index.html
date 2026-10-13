@@ -1,14 +1,16 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ec"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Kitaabnama">
 <title>Kitaabnama · Library</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f7f3ec;--fg:#1d1b19;--muted:#8b867f;--line:#0000001a;--accent:#C8862A;--wood:#e9dfcf}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:'Inter',system-ui,sans-serif;-webkit-text-size-adjust:100%}
 a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:14px max(20px,calc(50% - 560px));background:rgba(247,243,236,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) max(calc(20px + env(safe-area-inset-right)),calc(50% - 560px)) 14px max(calc(20px + env(safe-area-inset-left)),calc(50% - 560px));background:rgba(247,243,236,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .logo{font:600 22px 'Literata',serif;flex:1}.logo i{color:var(--accent);font-style:normal}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:500}.btn.pri{background:var(--fg);color:#fff;border-color:var(--fg)}
-main{max-width:1120px;margin:0 auto;padding:24px 20px 80px}
+main{max-width:1120px;margin:0 auto;padding:24px calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
 h2{font:600 22px 'Literata',serif;margin:34px 0 14px;display:flex;align-items:baseline;gap:10px}h2 small{font:400 13px 'Inter';color:var(--muted)}
 .hero{display:flex;gap:24px;align-items:center;background:#fff;border-radius:20px;padding:22px;box-shadow:0 1px 2px #0000000d,0 12px 40px #0000000f}
 .hero .cv{width:120px;flex:none}.hero .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h3{font:600 26px/1.15 'Literata',serif;margin:6px 0}.hero p{color:var(--muted);margin:0 0 14px;font-size:14px}
@@ -28,6 +30,10 @@ h2{font:600 22px 'Literata',serif;margin:34px 0 14px;display:flex;align-items:ba
 @media (max-width:600px){.hero{padding:16px;gap:16px}.hero .cv{width:86px}.hero h3{font-size:20px}.shelf{grid-template-columns:repeat(3,1fr);gap:26px 14px;padding:18px 14px 0}.bk .n{font-size:12px}.btn span{display:none}}
 .hasimg .t,.hasimg .a{display:none}
 
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+header,footer,button,.btn,.pop,#swati,#tab,label,.seg,.tabs,.hero .k,h2{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.25s}
+body{animation:knIn .28s ease-out}@keyframes knIn{from{opacity:0}to{opacity:1}}body.leaving{opacity:0;transition:opacity .15s}
 </style></head><body>
 <header><div class="logo">Kitaab<i>nama</i></div><label class="btn pri"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Open EPUB file</span><input type="file" id="file" accept=".epub,application/epub+zip" hidden></label></header>
 <main>
@@ -63,4 +69,8 @@ $('#file').onchange=e=>importFile(e.target.files[0]);
 addEventListener('dragover',e=>{e.preventDefault();$('#drop').classList.add('show')});addEventListener('dragleave',e=>{if(!e.relatedTarget)$('#drop').classList.remove('show')});
 addEventListener('drop',e=>{e.preventDefault();$('#drop').classList.remove('show');importFile(e.dataTransfer.files[0])});
 addEventListener('pageshow',load);
-</script></body></html>
+</script><script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href]');if(!a||a.target||e.metaKey||e.ctrlKey||!document.startViewTransition&&false)return;const h=a.getAttribute('href');if(!/^(index|reader)\.html/.test(h))return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=h,140)});
+addEventListener('pageshow',()=>document.body.classList.remove('leaving'));
+document.addEventListener('gesturestart',e=>e.preventDefault());</script>
+</body></html>
