@@ -72,7 +72,7 @@ function onKey(e){if(e.target.closest&&e.target.closest('input,textarea'))return
  else if(e.key=='Escape'){hideSel();closePops()}}
 
 // ----- swipe / drag / trackpad page turns
-const Swipe=(()=>{const TH=40,V=()=>$('#viewer');let g=null,busy=false,suppressUntil=0,wAcc=0,wLock=false,wTimer=0,wReset=0;
+const Swipe=(()=>{const TH=20,V=()=>$('#viewer');let g=null,busy=false,suppressUntil=0,wAcc=0,wLock=false,wTimer=0,wReset=0;
  const eat=()=>Date.now()<suppressUntil;
  function setX(x,anim){const v=V();v.style.transition=anim?'transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s':'none';v.style.transform=x?'translate3d('+x+'px,0,0)':'';}
  function selActive(){try{return rend.getContents().some(c=>{const s=c.window.getSelection();return s&&!s.isCollapsed&&s.toString().trim()})}catch(e){return false}}
@@ -83,21 +83,22 @@ const Swipe=(()=>{const TH=40,V=()=>$('#viewer');let g=null,busy=false,suppressU
   try{await (dir>0?rend.next():rend.prev())}catch(e){}
   setX(dir*Math.min(w*.2,90),false);V().offsetWidth;V().style.opacity='1';setX(0,true);setTimeout(()=>{busy=false},230);window.__turns=(window.__turns||0)+1}
  // gesture start/move/end in parent coordinates (stable while the iframe is translated)
- function start(x,y,kind){if(busy||selActive())return false;g={x0:x,y0:y,t0:Date.now(),kind,mode:null,dx:0};return true}
+ function start(x,y,kind){if(busy||(kind=='mouse'&&selActive()))return false;g={x0:x,y0:y,t0:Date.now(),kind,mode:null,dx:0};return true}
  function move(x,y,ev){if(!g)return;const dx=x-g.x0,dy=y-g.y0;
-  if(!g.mode){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;if(Math.abs(dx)>Math.abs(dy)*1.2&&!selActive())g.mode='h';else{g.mode='v';}}
+  if(g.kind=='touch'&&ev&&ev.cancelable&&g.mode!='v')ev.preventDefault();if(!g.mode){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;if(selActive()){cancel();return}g.mode=Math.abs(dx)>=Math.abs(dy)?'h':'v'}
   if(g.mode!='h')return;if(ev&&ev.cancelable)ev.preventDefault();
-  if(g.kind=='mouse'&&selActive()){cancel();return}
+  if(selActive()){cancel();return}
   const edge=atEdge(dx<0?1:-1);g.dx=dx;setX(edge?dx*.25:dx*.9,false)}
  function end(){if(!g)return;const G=g;g=null;if(G.mode!='h'){if(G.mode)setX(0,true);return}
-  suppressUntil=Date.now()+400;const fast=Math.abs(G.dx)>20&&Date.now()-G.t0<250;
+  suppressUntil=Date.now()+400;const fast=Math.abs(G.dx)>=10&&Math.abs(G.dx)/Math.max(1,Date.now()-G.t0)>0.3;
   if(Math.abs(G.dx)>=TH||fast)turn(G.dx<0?1:-1);else setX(0,true)}
  function cancel(){if(g){g=null;setX(0,true)}}
  function frameOff(win){try{const r=win.frameElement.getBoundingClientRect();return [r.left,r.top]}catch(e){return [0,0]}}
  function attach(d,win){
-  d.addEventListener('touchstart',e=>{if(e.touches.length!=1)return cancel();const t=e.touches[0],[ox,oy]=frameOff(win);start(t.clientX+ox,t.clientY+oy,'touch')},{passive:true});
+  d.addEventListener('touchstart',e=>{if(e.touches.length!=1)return cancel();const t=e.touches[0],[ox,oy]=frameOff(win);start(t.clientX+ox,t.clientY+oy,'touch')},{passive:false});
+  try{const st=d.createElement('style');st.textContent='html,body{touch-action:none;-webkit-touch-callout:default;overscroll-behavior:none}';d.head.appendChild(st)}catch(e){}
   d.addEventListener('touchmove',e=>{if(!g)return;if(e.touches.length!=1)return cancel();const t=e.touches[0],[ox,oy]=frameOff(win);move(t.clientX+ox,t.clientY+oy,e)},{passive:false});
-  d.addEventListener('touchend',e=>{end()},{passive:true});d.addEventListener('touchcancel',cancel,{passive:true});
+  d.addEventListener('touchend',e=>{if(g&&g.kind=='touch'){const t=e.changedTouches[0],[ox,oy]=frameOff(win);if(t)g.dx=(t.clientX+ox)-g.x0;if(!g.mode&&Math.abs(g.dx)>=TH)g.mode='h'}end()},{passive:false});d.addEventListener('touchcancel',()=>end(),{passive:true});
   // mouse drag: only when started on non-text area (so text selection still works)
   d.addEventListener('mousedown',e=>{if(e.button!==0)return;if(onText(d,e))return;const [ox,oy]=frameOff(win);if(start(e.clientX+ox,e.clientY+oy,'mouse'))e.preventDefault()});
   d.addEventListener('mousemove',e=>{if(g&&g.kind=='mouse'){const [ox,oy]=frameOff(win);move(e.clientX+ox,e.clientY+oy,e)}});
@@ -116,7 +117,7 @@ const Swipe=(()=>{const TH=40,V=()=>$('#viewer');let g=null,busy=false,suppressU
   const zone=e=>!e.target.closest('header,footer,.pop,#swati,#tab,#sel,input');
   addEventListener('touchstart',e=>{if(!zone(e)||e.touches.length!=1)return;start(e.touches[0].clientX,e.touches[0].clientY,'touch')},{passive:true});
   addEventListener('touchmove',e=>{if(g&&g.kind=='touch')move(e.touches[0].clientX,e.touches[0].clientY,e)},{passive:false});
-  addEventListener('touchend',()=>{if(g&&g.kind=='touch')end()},{passive:true});
+  addEventListener('touchend',()=>{if(g&&g.kind=='touch')end()},{passive:true});addEventListener('touchcancel',()=>{if(g&&g.kind=='touch')end()},{passive:true});
   addEventListener('mousedown',e=>{if(e.button!==0||!zone(e))return;start(e.clientX,e.clientY,'mouse')});
   addEventListener('mousemove',e=>{if(g&&g.kind=='mouse')move(e.clientX,e.clientY,e)});
   addEventListener('mouseup',()=>{if(g&&g.kind=='mouse')end()});
