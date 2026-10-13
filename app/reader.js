@@ -46,7 +46,7 @@ async function main(){
  if(cached){book.locations.load(cached);window.__locs=true;onReloc(rend.currentLocation())}else setTimeout(()=>book.locations.generate(1600).then(()=>{try{localStorage.setItem('kn:'+lk,book.locations.save())}catch(e){}window.__locs=true;onReloc(rend.currentLocation())}),300);
  KN.touchRecent(BID,{title:META.title,author:META.author,pct:DATA.pct||0});
  swatiInit();setTimeout(()=>$('body').classList.add('immersive'),2500);$('body').classList.remove('immersive');window.__ready=true}
-function onReloc(l){if(!l||!l.start)return;LOC=l;const ch=chapterFor(l.start.href);const lbl=ch?ch.label:'';
+function onReloc(l){if(!l||!l.start)return;if(!LOC||LOC.start.cfi!=l.start.cfi)window.__reloc=(window.__reloc||0)+1;LOC=l;const ch=chapterFor(l.start.href);const lbl=ch?ch.label:'';
  $('#runhead').textContent=lbl;$('#pchap').textContent=lbl;
  let pct=null;if(book.locations.length()){pct=l.start.percentage;if(l.atEnd)pct=1}
  const pg=l.start.displayed;const left=pg?Math.max(0,pg.total-pg.page):0;
@@ -63,14 +63,66 @@ function toggleChrome(force){const b=document.body;const imm=force!=null?force:!
 function closePops(){$$('#aa,#side').forEach(p=>p.classList.remove('show'));$('#baa').classList.remove('on');$('#btoc').classList.remove('on');$('#bsearch').classList.remove('on')}
 function zoneTap(x){const v=$('#viewer').getBoundingClientRect();const rel=(x-v.left)/v.width;if(rel<.28)prev();else if(rel>.72)next();else toggleChrome()}
 function wireDoc(c){const d=c.document,win=c.window;let sx=0,sy=0,st=0;
- d.addEventListener('click',e=>{if(e.target.closest('a'))return;if(win.getSelection().toString())return;if(e.target.closest('[data-hl]'))return;if($('#sel').classList.contains('show')){hideSel();return}
+ d.addEventListener('click',e=>{if(Swipe.eat()){e.preventDefault();e.stopPropagation();return}if(e.target.closest('a'))return;if(win.getSelection().toString())return;if(e.target.closest('[data-hl]'))return;if($('#sel').classList.contains('show')){hideSel();return}
   if($('#aa').classList.contains('show')||$('#side').classList.contains('show')){closePops();return}const fr=win.frameElement.getBoundingClientRect();zoneTap(fr.left+e.clientX)});
- d.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()},{passive:true});
- d.addEventListener('touchend',e=>{const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5&&Date.now()-st<700){dx<0?next():prev()}},{passive:true});
+ Swipe.attach(d,win);
  d.addEventListener('keydown',onKey)}
 function onKey(e){if(e.target.closest&&e.target.closest('input,textarea'))return;
  if(e.key=='ArrowRight'||e.key=='PageDown'||(e.key==' '&&!e.shiftKey)){e.preventDefault();next()}else if(e.key=='ArrowLeft'||e.key=='PageUp'||(e.key==' '&&e.shiftKey)){e.preventDefault();prev()}
  else if(e.key=='Escape'){hideSel();closePops()}}
+
+// ----- swipe / drag / trackpad page turns
+const Swipe=(()=>{const TH=40,V=()=>$('#viewer');let g=null,busy=false,suppressUntil=0,wAcc=0,wLock=false,wTimer=0,wReset=0;
+ const eat=()=>Date.now()<suppressUntil;
+ function setX(x,anim){const v=V();v.style.transition=anim?'transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s':'none';v.style.transform=x?'translate3d('+x+'px,0,0)':'';}
+ function selActive(){try{return rend.getContents().some(c=>{const s=c.window.getSelection();return s&&!s.isCollapsed&&s.toString().trim()})}catch(e){return false}}
+ function atEdge(dir){return LOC&&((dir>0&&LOC.atEnd)||(dir<0&&LOC.atStart))}
+ async function turn(dir){if(busy)return;busy=true;hideSel();const w=V().clientWidth;
+  if(atEdge(dir)){setX(0,true);busy=false;return}
+  setX(-dir*Math.min(w*.35,160),true);V().style.opacity='0';await new Promise(r=>setTimeout(r,170));
+  try{await (dir>0?rend.next():rend.prev())}catch(e){}
+  setX(dir*Math.min(w*.2,90),false);V().offsetWidth;V().style.opacity='1';setX(0,true);setTimeout(()=>{busy=false},230);window.__turns=(window.__turns||0)+1}
+ // gesture start/move/end in parent coordinates (stable while the iframe is translated)
+ function start(x,y,kind){if(busy||selActive())return false;g={x0:x,y0:y,t0:Date.now(),kind,mode:null,dx:0};return true}
+ function move(x,y,ev){if(!g)return;const dx=x-g.x0,dy=y-g.y0;
+  if(!g.mode){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;if(Math.abs(dx)>Math.abs(dy)*1.2&&!selActive())g.mode='h';else{g.mode='v';}}
+  if(g.mode!='h')return;if(ev&&ev.cancelable)ev.preventDefault();
+  if(g.kind=='mouse'&&selActive()){cancel();return}
+  const edge=atEdge(dx<0?1:-1);g.dx=dx;setX(edge?dx*.25:dx*.9,false)}
+ function end(){if(!g)return;const G=g;g=null;if(G.mode!='h'){if(G.mode)setX(0,true);return}
+  suppressUntil=Date.now()+400;const fast=Math.abs(G.dx)>20&&Date.now()-G.t0<250;
+  if(Math.abs(G.dx)>=TH||fast)turn(G.dx<0?1:-1);else setX(0,true)}
+ function cancel(){if(g){g=null;setX(0,true)}}
+ function frameOff(win){try{const r=win.frameElement.getBoundingClientRect();return [r.left,r.top]}catch(e){return [0,0]}}
+ function attach(d,win){
+  d.addEventListener('touchstart',e=>{if(e.touches.length!=1)return cancel();const t=e.touches[0],[ox,oy]=frameOff(win);start(t.clientX+ox,t.clientY+oy,'touch')},{passive:true});
+  d.addEventListener('touchmove',e=>{if(!g)return;if(e.touches.length!=1)return cancel();const t=e.touches[0],[ox,oy]=frameOff(win);move(t.clientX+ox,t.clientY+oy,e)},{passive:false});
+  d.addEventListener('touchend',e=>{end()},{passive:true});d.addEventListener('touchcancel',cancel,{passive:true});
+  // mouse drag: only when started on non-text area (so text selection still works)
+  d.addEventListener('mousedown',e=>{if(e.button!==0)return;if(onText(d,e))return;const [ox,oy]=frameOff(win);if(start(e.clientX+ox,e.clientY+oy,'mouse'))e.preventDefault()});
+  d.addEventListener('mousemove',e=>{if(g&&g.kind=='mouse'){const [ox,oy]=frameOff(win);move(e.clientX+ox,e.clientY+oy,e)}});
+  d.addEventListener('mouseup',()=>{if(g&&g.kind=='mouse')end()});
+  d.addEventListener('wheel',wheel,{passive:false})}
+ function onText(d,e){if(e.target.closest&&e.target.closest('a,img,[data-hl]'))return e.target.tagName!='IMG';let r=null;
+  if(d.caretRangeFromPoint)r=d.caretRangeFromPoint(e.clientX,e.clientY);else if(d.caretPositionFromPoint){const p=d.caretPositionFromPoint(e.clientX,e.clientY);if(p){r=d.createRange();r.setStart(p.offsetNode,p.offset)}}
+  if(!r||r.startContainer.nodeType!=3)return false;const rr=d.createRange();rr.selectNodeContents(r.startContainer);
+  return [...rr.getClientRects()].some(b=>e.clientX>=b.left-2&&e.clientX<=b.right+2&&e.clientY>=b.top-2&&e.clientY<=b.bottom+2)}
+ // trackpad: one gesture (until wheel quiet for 300ms) = one page
+ function wheel(e){const ax=Math.abs(e.deltaX),ay=Math.abs(e.deltaY);if(ax<=ay||e.ctrlKey)return;e.preventDefault();
+  clearTimeout(wTimer);wTimer=setTimeout(()=>{wLock=false;wAcc=0},300);
+  if(wLock)return;wAcc+=e.deltaX*(e.deltaMode==1?16:1);if(Math.abs(wAcc)>=60){wLock=true;turn(wAcc>0?1:-1);wAcc=0}}
+ // parent-level: page margins / edge buttons / desktop mouse
+ function attachParent(){addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('.pop,#swati,#side,#aa'))return;wheel(e)},{passive:false});
+  const zone=e=>!e.target.closest('header,footer,.pop,#swati,#tab,#sel,input');
+  addEventListener('touchstart',e=>{if(!zone(e)||e.touches.length!=1)return;start(e.touches[0].clientX,e.touches[0].clientY,'touch')},{passive:true});
+  addEventListener('touchmove',e=>{if(g&&g.kind=='touch')move(e.touches[0].clientX,e.touches[0].clientY,e)},{passive:false});
+  addEventListener('touchend',()=>{if(g&&g.kind=='touch')end()},{passive:true});
+  addEventListener('mousedown',e=>{if(e.button!==0||!zone(e))return;start(e.clientX,e.clientY,'mouse')});
+  addEventListener('mousemove',e=>{if(g&&g.kind=='mouse')move(e.clientX,e.clientY,e)});
+  addEventListener('mouseup',()=>{if(g&&g.kind=='mouse')end()});
+  addEventListener('click',e=>{if(eat()&&e.target.closest('.edge')){e.preventDefault();e.stopPropagation()}},true)}
+ return {attach,attachParent,turn,eat}})();
+Swipe.attachParent();
 document.addEventListener('keydown',onKey);$('#pv').onclick=prev;$('#nx').onclick=next;
 let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>applySettings(false),150)});
 document.addEventListener('mousemove',e=>{if(e.clientY<40&&document.body.classList.contains('immersive'))toggleChrome(false)});
